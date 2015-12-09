@@ -1,0 +1,10 @@
+/var/log/php/*log {
+     daily
+     dateext
+     missingok
+     rotate 7
+     create 0644 root root
+     notifempty
+     sharedscripts
+     delaycompress
+ }

@@ -1,0 +1,78 @@
+---
+
+- name: Install extra repositories
+  yum: name={{item}} state=present
+  with_items: 
+    - http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+    - http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    - http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm
+
+- name: Install Percona-Server-client-56
+  yum: name=Percona-Server-client-56.x86_64 state=latest 
+
+
+- name: Install PHP
+  yum: name=php,php-common,php-cli,php-devel,php-gd,php-intl,php-mbstring,php-pdo,php-soap,php-xml,php-mysqlnd,php-opcache,php-mcrypt,php-pear,php-pecl-memcached,php-pecl-http state=latest enablerepo=epel,remi,remi-php56
+
+
+- name: Change PHP default settings
+  lineinfile: dest=/etc/php.ini regexp='^short_open_tag' line='short_open_tag = Off'
+
+
+- lineinfile: dest=/etc/php.ini regexp='^asp_tags' line='asp_tags = Off'
+
+
+- lineinfile: dest=/etc/php.ini regexp='^expose_php' line='expose_php = Off'
+
+
+- lineinfile: dest=/etc/php.ini regexp='^display_errors' line='display_errors = Off'
+
+
+- lineinfile: dest=/etc/php.ini regexp='^display_startup_errors' line='display_startup_errors = Off'
+
+
+- lineinfile: dest=/etc/php.ini regexp='^log_error' line='log_error = On'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^\;?error_log' line='error_log = {{modphp56_logpath}}'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^memory_limit' line='memory_limit = 200M'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^allow_url_fopen' line='allow_url_fopen = Off'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^allow_url_include' line='allow_url_include = Off'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^\;?date\.timezone' line='date.timezone = "{{modphp56_timezone}}"'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^max_execution_time' line='max_execution_time = 60'
+
+
+- lineinfile: 'dest=/etc/php.ini regexp="^disable_functions" line="disable_functions = {{modphp56_disablefunction}}"'
+
+
+- lineinfile: dest=/etc/php.ini  regexp='^safe_mode' line='safe_mode = Off'
+
+
+- name: Setting Opcache validate_timestamps
+  lineinfile: dest='/etc/php.d/10-opcache.ini' regexp='^\;?opcache\.validate_timestamps' line='opcache.validate_timestamps=1'
+
+
+- name: Setting Opcache revalidate_freq
+  lineinfile: dest='/etc/php.d/10-opcache.ini' regexp='^\;?opcache\.revalidate_freq' line='opcache.revalidate_freq=1'
+
+
+- name: Create log folder
+  file: path=/var/log/php state=directory
+
+
+- name: Create PHP Log-rotate
+  copy: src=php_logrotate dest=/etc/logrotate.d/php
+
+
+
+

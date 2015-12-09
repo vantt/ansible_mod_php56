@@ -1,0 +1,3 @@
+modphp56_logpath: "/var/log/php/errors.log"
+modphp56_timezone: "/var/log/php/"
+modphp56_disablefunction: "/var/log/php/"
